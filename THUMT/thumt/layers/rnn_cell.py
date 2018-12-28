@@ -144,8 +144,8 @@ class AttentionWrapper(tf.nn.rnn_cell.RNNCell):
         return tuple(new_output_size)
 
 
-class DL4MTGRULAUTransiLNCell(tf.nn.rnn_cell.RNNCell):
-    """ DL4MT's implementation of GRUCell with LAU and Transition
+class DTMTCell(tf.nn.rnn_cell.RNNCell):
+    """ Implementation of DTMTCell with L-GRU and T-GRUs
 
     Args:
         num_units: int, The number of units in the RNN cell.
@@ -155,9 +155,10 @@ class DL4MTGRULAUTransiLNCell(tf.nn.rnn_cell.RNNCell):
     """
 
     def __init__(self, num_units, keep_prob=None, reuse=None):
-        super(DL4MTGRULAUTransiLNCell, self).__init__(_reuse=reuse)
+        super(DTMTCell, self).__init__(_reuse=reuse)
         self._num_units = num_units
         self._keep_prob = keep_prob
+        self._num_transi = 4
 
     def __call__(self, inputs, state, scope=None):
         with tf.variable_scope(scope, default_name="gru_cell",
@@ -183,60 +184,22 @@ class DL4MTGRULAUTransiLNCell(tf.nn.rnn_cell.RNNCell):
                 c = tf.nn.dropout(c, self._keep_prob)
 
             new_state = (1.0 - u) * state + u * c
+	    
+            for i in range(self._num_transi):
+            	rh = tf.nn.sigmoid(layer_norm(linear(new_state, self._num_units, False, False,
+                                                     scope="trans_reset_gate_l%d" %i),
+                                              scope="trans_reset_gate_ln_l%d" %i))
+            	uh = tf.nn.sigmoid(layer_norm(linear(new_state, self._num_units, False, False,
+                                                     scope="trans_update_gate_l%d" %i),
+                                              scope="trans_update_gate_ln_l%d" %i))
+            	ch = tf.tanh(rh * linear(new_state, self._num_units, True, False,
+                                         scope="trans_candidate_l%d" %i))
+            	if self._keep_prob and self._keep_prob < 1.0:
+                    ch = tf.nn.dropout(ch, self._keep_prob)
 
-            rh = tf.nn.sigmoid(layer_norm(linear(new_state, self._num_units, False, False,
-                                                 scope="trans_reset_gate"),
-                                         scope="trans_reset_gate_ln"))
-            uh = tf.nn.sigmoid(layer_norm(linear(new_state, self._num_units, False, False,
-                                                 scope="trans_update_gate"),
-                                         scope="trans_update_gate_ln"))
-            ch = tf.tanh(rh * linear(new_state, self._num_units, True, False,
-                                     scope="trans_candidate"))
-            if self._keep_prob and self._keep_prob < 1.0:
-                ch = tf.nn.dropout(ch, self._keep_prob)
+            	new_state = (1.0 - uh) * new_state + uh * ch
 
-            new_state2 = (1.0 - uh) * new_state + uh * ch
-
-            rh = tf.nn.sigmoid(layer_norm(linear(new_state2, self._num_units, False, False,
-                                                 scope="trans_reset_gate2"),
-                                         scope="trans_reset_gate2_ln"))
-            uh = tf.nn.sigmoid(layer_norm(linear(new_state2, self._num_units, False, False,
-                                                 scope="trans_update_gate2"),
-                                         scope="trans_update_gate2_ln"))
-            ch = tf.tanh(rh * linear(new_state2, self._num_units, True, False,
-                                     scope="trans_candidate2"))
-            if self._keep_prob and self._keep_prob < 1.0:
-                ch = tf.nn.dropout(ch, self._keep_prob)
-
-            new_state3 = (1.0 - uh) * new_state2 + uh * ch
-
-            rh = tf.nn.sigmoid(layer_norm(linear(new_state3, self._num_units, False, False,
-                                                 scope="trans_reset_gate3"),
-                                         scope="trans_reset_gate3_ln"))
-            uh = tf.nn.sigmoid(layer_norm(linear(new_state3, self._num_units, False, False,
-                                                 scope="trans_update_gate3"),
-                                         scope="trans_update_gate3_ln"))
-            ch = tf.tanh(rh * linear(new_state3, self._num_units, True, False,
-                                     scope="trans_candidate3"))
-            if self._keep_prob and self._keep_prob < 1.0:
-                ch = tf.nn.dropout(ch, self._keep_prob)
-
-            new_state4 = (1.0 - uh) * new_state3 + uh * ch
-
-            rh = tf.nn.sigmoid(layer_norm(linear(new_state4, self._num_units, False, False,
-                                                 scope="trans_reset_gate4"),
-                                         scope="trans_reset_gate4_ln"))
-            uh = tf.nn.sigmoid(layer_norm(linear(new_state4, self._num_units, False, False,
-                                                 scope="trans_update_gate4"),
-                                         scope="trans_update_gate4_ln"))
-            ch = tf.tanh(rh * linear(new_state4, self._num_units, True, False,
-                                     scope="trans_candidate4"))
-            if self._keep_prob and self._keep_prob < 1.0:
-                ch = tf.nn.dropout(ch, self._keep_prob)
-
-            new_state5 = (1.0 - uh) * new_state4 + uh * ch
-
-        return new_state5, new_state5
+        return new_state, new_state
 
     @property
     def state_size(self):
