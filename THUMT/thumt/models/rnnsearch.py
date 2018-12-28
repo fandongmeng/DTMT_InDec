@@ -219,8 +219,8 @@ def encoding_graph(features, mode, params):
         src_inputs = tf.nn.dropout(src_inputs, 1.0 - params.dropout)
 
     # encoder
-    cell_fw = layers.rnn_cell.DL4MTGRULAUTransiLNCell(params.hidden_size, 1.0 - params.rnn_dropout)
-    cell_bw = layers.rnn_cell.DL4MTGRULAUTransiLNCell(params.hidden_size, 1.0 - params.rnn_dropout)
+    cell_fw = layers.rnn_cell.DTMTCell(params.hidden_size, 1.0 - params.rnn_dropout)
+    cell_bw = layers.rnn_cell.DTMTCell(params.hidden_size, 1.0 - params.rnn_dropout)
 
     if params.use_variational_dropout:
         cell_fw = tf.nn.rnn_cell.DropoutWrapper(
@@ -283,8 +283,8 @@ def decoding_graph(features, state, mode, params):
     initial_state = state["initstate"]
 
     # decoder
-    cell = layers.rnn_cell.DL4MTGRULAUTransiLNCell(params.hidden_size, 1.0 - params.rnn_dropout)
-    cell_cond = layers.rnn_cell.DL4MTGRULAUTransiLNCell(params.hidden_size, 1.0 - params.rnn_dropout)
+    cell = layers.rnn_cell.DTMTCell(params.hidden_size, 1.0 - params.rnn_dropout)
+    cell_cond = layers.rnn_cell.DTMTCell(params.hidden_size, 1.0 - params.rnn_dropout)
 
     if params.use_variational_dropout:
         cell = tf.nn.rnn_cell.DropoutWrapper(
