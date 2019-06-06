@@ -104,7 +104,7 @@ def default_parameters():
         validation="",
         references=[""],
         save_checkpoint_secs=0,
-        save_checkpoint_steps=1000,
+        save_checkpoint_steps=2000,
         # Setting this to True can save disk spaces, but cannot restore
         # training using the saved checkpoint
         only_save_trainable=False
