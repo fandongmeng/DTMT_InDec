@@ -34,7 +34,7 @@ sh run_test.sh
 Please cite the following paper if you use the code:
 
 ```
-@InProceedings{meng-aaai2019,
+@InProceedings{Meng:AAAI2019,
   author    = {Fandong Meng, and Jinchao Zhang},
   title     = {DTMT: A Novel Deep Transition Architecture for Neural Machine Translation},
   booktitle = {Proceedings of AAAI},
