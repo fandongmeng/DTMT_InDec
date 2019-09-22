@@ -34,10 +34,12 @@ sh run_test.sh
 Please cite the following paper if you use the code:
 
 ```
-@InProceedings{Meng:AAAI2019,
-  author    = {Fandong Meng, and Jinchao Zhang},
-  title     = {DTMT: A Novel Deep Transition Architecture for Neural Machine Translation},
-  booktitle = {Proceedings of AAAI},
-  year      = {2019}
+@inproceedings{meng2019dtmt,
+  title={DTMT: A novel deep transition architecture for neural machine translation},
+  author={Meng, Fandong and Zhang, Jinchao},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={33},
+  pages={224--231},
+  year={2019}
 }
 ```
