@@ -35,7 +35,7 @@ Please cite the following paper if you use the code:
 
 ```
 @inproceedings{meng2019dtmt,
-  title={DTMT: A novel deep transition architecture for neural machine translation},
+  title={{DTMT:} {A} novel deep transition architecture for neural machine translation},
   author={Meng, Fandong and Zhang, Jinchao},
   booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
   volume={33},
