@@ -199,10 +199,10 @@ def _decoder(cell_cond, cell, inputs, memory, sequence_length, initial_state, in
 def encoding_graph(features, mode, params):
 
     if mode != "train":
-	params.dropout = 0.0
-	params.rnn_dropout = 0.0
+	    params.dropout = 0.0
+	    params.rnn_dropout = 0.0
         params.use_variational_dropout = False
-	params.label_smoothing = 0.0
+	    params.label_smoothing = 0.0
 
     src_vocab_size = len(params.vocabulary["source"])
 
@@ -260,10 +260,10 @@ def encoding_graph(features, mode, params):
 def decoding_graph(features, state, mode, params):
 
     if mode != "train":
-	params.dropout = 0.0
-	params.rnn_dropout = 0.0
+	    params.dropout = 0.0
+	    params.rnn_dropout = 0.0
         params.use_variational_dropout = False
-	params.label_smoothing = 0.0
+	    params.label_smoothing = 0.0
 
     tgt_vocab_size = len(params.vocabulary["target"])
 
@@ -314,17 +314,17 @@ def decoding_graph(features, state, mode, params):
     	# Shift left
     	shifted_tgt_inputs = tf.pad(tgt_inputs, [[0, 0], [1, 0], [0, 0]])
         shifted_tgt_inputs = shifted_tgt_inputs[:, :-1, :]
-	decoder_output = _decoder(cell_cond, cell, shifted_tgt_inputs[:, -1:, :], encoder_output["annotation"],
+	    decoder_output = _decoder(cell_cond, cell, shifted_tgt_inputs[:, -1:, :], encoder_output["annotation"],
                                   length, initial_state, incre_state=state["decoder"])
-	shifted_outputs = decoder_output["outputs"]
+	    shifted_outputs = decoder_output["outputs"]
 
-	maxout_features = [
+	    maxout_features = [
             shifted_tgt_inputs[:, -1, :],
             shifted_outputs[:, -1, :],
             decoder_output["values"][:, -1, :]
         ]
 
-	readout = layers.nn.maxout(maxout_features, maxout_size, params.maxnum,
+	    readout = layers.nn.maxout(maxout_features, maxout_size, params.maxnum,
                                    concat=False)
         readout = tf.tanh(readout)
 
@@ -332,9 +332,9 @@ def decoding_graph(features, state, mode, params):
         logits = layers.nn.linear(readout, tgt_vocab_size, True, False,
                                   scope="softmax")
 
-	log_prob = tf.nn.log_softmax(logits)
+	    log_prob = tf.nn.log_softmax(logits)
 
-	return log_prob, {"encoder": encoder_output, "initstate": initial_state, "decoder": decoder_output["state"]}
+	    return log_prob, {"encoder": encoder_output, "initstate": initial_state, "decoder": decoder_output["state"]}
 
 
     shifted_outputs = decoder_output["outputs"]
@@ -479,7 +479,7 @@ class RNNsearch(interface.NMTModel):
             maxnum=1,
             # regularization
             dropout=0.5,
-	    rnn_dropout=0.3,
+	        rnn_dropout=0.3,
             use_variational_dropout=False,
             label_smoothing=0.1,
             constant_batch_size=True,
